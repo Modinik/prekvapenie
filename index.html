@@ -2,7 +2,7 @@
 <html lang="sk">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Všetko najlepšie, tatik!</title>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
     <style>
@@ -19,18 +19,21 @@
             overflow: hidden;
             text-align: center;
             cursor: pointer;
+            /* Zabraňuje nechcenému zoomovaniu na mobile pri klikaní */
+            touch-action: manipulation;
         }
 
         .container {
-            padding: 50px 70px;
-            border-radius: 40px;
+            padding: 30px;
+            border-radius: 30px;
             background: rgba(255, 255, 255, 0.05);
             box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
             backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px); /* Pre Safari na iPhone */
             border: 1px solid rgba(255, 255, 255, 0.1);
             animation: fadeIn 1.2s ease-out;
-            max-width: 850px;
-            width: 85%;
+            max-width: 90%; /* Prispôsobenie šírky mobilu */
+            width: 800px;
             z-index: 1; 
             position: relative;
             user-select: none;
@@ -46,40 +49,38 @@
             pointer-events: none;
         }
 
+        /* Dynamická veľkosť písma podľa zariadenia */
         h1 {
-            font-size: 3.5rem;
-            margin-bottom: 20px;
+            font-size: clamp(2rem, 8vw, 3.5rem);
+            margin-bottom: 15px;
             color: #ff4d6d;
             text-shadow: 0 0 15px rgba(255, 77, 109, 0.3);
         }
 
         p {
-            font-size: 1.8rem;
-            line-height: 1.5;
+            font-size: clamp(1.1rem, 4vw, 1.8rem);
+            line-height: 1.4;
             color: #f0f0f0;
         }
 
-        /* ŠTÝL PRE NÁPOVEDU DOLE */
         .click-hint {
             position: absolute;
-            bottom: 30px;
+            bottom: 20px;
             left: 50%;
             transform: translateX(-50%);
-            font-size: 1.1rem;
+            font-size: clamp(0.7rem, 3vw, 1rem);
             color: #ff4d6d;
-            letter-spacing: 2px;
+            letter-spacing: 1px;
             text-transform: uppercase;
             font-weight: bold;
             opacity: 0.6;
             animation: pulse 2s infinite ease-in-out;
-            z-index: 10;
-            pointer-events: none;
+            width: 100%;
         }
 
         @keyframes pulse {
-            0% { opacity: 0.2; transform: translateX(-50%) scale(0.95); }
-            50% { opacity: 0.8; transform: translateX(-50%) scale(1); }
-            100% { opacity: 0.2; transform: translateX(-50%) scale(0.95); }
+            0%, 100% { opacity: 0.2; }
+            50% { opacity: 0.8; }
         }
 
         @keyframes fadeIn {
@@ -90,14 +91,14 @@
         .emoji-click {
             position: absolute;
             pointer-events: none;
-            font-size: 2.8rem;
-            animation: fall 3s forwards ease-in;
+            font-size: clamp(1.5rem, 6vw, 2.8rem);
+            animation: fall 2.5s forwards ease-in;
             z-index: 101;
         }
 
         @keyframes fall {
             0% { transform: translateY(0) rotate(0deg); opacity: 1; }
-            100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
+            100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
         }
     </style>
 </head>
@@ -109,16 +110,17 @@
         Si ten najlepší tatik na svete!</p>
     </div>
 
-    <div class="click-hint">Skús klikať na obrazovku ✨</div>
+    <div class="click-hint">Ťukni na displej pre prekvapenie ✨</div>
 
     <script>
         const myConfetti = confetti.create(undefined, { resize: true, useWorker: true });
 
-        document.addEventListener('click', function(e) {
+        // Funkcia pre efekty (funguje na klik aj dotyk)
+        function triggerEffect(x, y) {
             myConfetti({
-                particleCount: 50,
-                spread: 80,
-                origin: { x: e.clientX / window.innerWidth, y: e.clientY / window.innerHeight },
+                particleCount: window.innerWidth < 600 ? 25 : 50, // Na mobile menej častíc, aby nesekalo
+                spread: 70,
+                origin: { x: x / window.innerWidth, y: y / window.innerHeight },
                 zIndex: 200
             });
 
@@ -126,16 +128,24 @@
             const emojiEl = document.createElement('div');
             emojiEl.className = 'emoji-click';
             emojiEl.innerHTML = emojis[Math.floor(Math.random() * emojis.length)];
-            emojiEl.style.left = e.clientX + 'px';
-            emojiEl.style.top = e.clientY + 'px';
+            emojiEl.style.left = x + 'px';
+            emojiEl.style.top = y + 'px';
             document.body.appendChild(emojiEl);
-            setTimeout(() => { emojiEl.remove(); }, 3000);
+            setTimeout(() => { emojiEl.remove(); }, 2500);
+        }
+
+        document.addEventListener('mousedown', (e) => triggerEffect(e.clientX, e.clientY));
+        // Pridaná podpora pre dotykové displeje
+        document.addEventListener('touchstart', (e) => {
+            triggerEffect(e.touches[0].clientX, e.touches[0].clientY);
         });
 
         window.onload = function() {
-            myConfetti({ particleCount: 150, spread: 70, origin: { x: 0.1, y: 0.5 }, zIndex: 200 });
-            myConfetti({ particleCount: 150, spread: 70, origin: { x: 0.9, y: 0.5 }, zIndex: 200 });
-            myConfetti({ particleCount: 200, spread: 100, origin: { x: 0.5, y: 0.3 }, zIndex: 200 });
+            const isMobile = window.innerWidth < 600;
+            
+            // Úvodné výbuchy prispôsobené obrazovke
+            myConfetti({ particleCount: isMobile ? 80 : 150, spread: 70, origin: { x: 0.1, y: 0.5 }, zIndex: 200 });
+            myConfetti({ particleCount: isMobile ? 80 : 150, spread: 70, origin: { x: 0.9, y: 0.5 }, zIndex: 200 });
 
             var duration = 3 * 1000; 
             var end = Date.now() + duration;
@@ -144,14 +154,13 @@
                 if (Date.now() > end) return clearInterval(interval);
 
                 myConfetti({
-                    particleCount: 25, 
-                    startVelocity: 40,
+                    particleCount: isMobile ? 10 : 25, 
+                    startVelocity: isMobile ? 25 : 40,
                     spread: 360,
                     origin: { x: Math.random(), y: Math.random() - 0.2 },
-                    zIndex: 200,
-                    colors: ['#ff4d6d', '#4cc9f0', '#ffbe0b', '#ffffff']
+                    zIndex: 200
                 });
-            }, 100);
+            }, isMobile ? 200 : 100);
         };
     </script>
 </body>
