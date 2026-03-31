@@ -33,6 +33,7 @@
             max-width: 900px;
             width: 85%;
             z-index: 10;
+            position: relative;
         }
 
         h1 {
@@ -54,18 +55,17 @@
             to { opacity: 1; transform: scale(1); }
         }
 
-        /* Štýl pre padajúce emoji pri kliknutí */
         .emoji-click {
             position: absolute;
             pointer-events: none;
-            font-size: 2rem;
-            animation: fall 2s forwards ease-in;
+            font-size: 2.5rem;
+            animation: fall 2.5s forwards ease-in;
             z-index: 100;
         }
 
         @keyframes fall {
             0% { transform: translateY(0) rotate(0deg); opacity: 1; }
-            100% { transform: translateY(500px) rotate(360deg); opacity: 0; }
+            100% { transform: translateY(800px) rotate(720deg); opacity: 0; }
         }
 
         .hint {
@@ -75,7 +75,7 @@
             color: #ff4d6d;
             letter-spacing: 1px;
             text-transform: uppercase;
-            opacity: 0.5;
+            opacity: 0.6;
         }
     </style>
 </head>
@@ -87,24 +87,19 @@
         Si ten najlepší tatik na svete!</p>
     </div>
 
-    <div class="hint">Klikaj kdekoľvek pre prekvapenie ✨</div>
+    <div class="hint">Klikaj na obrazovku pre ďalšie prekvapenia! ✨</div>
 
     <script>
-        // Funkcia pre efekty pri kliknutí
+        // 1. EFEKT PRI KLIKNUTÍ (Konfety + Padajúce Emoji)
         document.addEventListener('click', function(e) {
-            // 1. Klasické konfety z miesta kliku
             confetti({
-                particleCount: 30,
-                spread: 60,
-                origin: {
-                    x: e.clientX / window.innerWidth,
-                    y: e.clientY / window.innerHeight
-                },
-                colors: ['#ff4d6d', '#ffffff', '#ffbe0b']
+                particleCount: 40,
+                spread: 70,
+                origin: { x: e.clientX / window.innerWidth, y: e.clientY / window.innerHeight },
+                colors: ['#ff4d6d', '#4cc9f0', '#ffbe0b', '#ffffff']
             });
 
-            // 2. Ručne vytvorené padajúce emoji
-            const emojis = ['🎉', '🎂', '🎈', '🎊'];
+            const emojis = ['🎉', '🎂', '🎈', '🎊', '🏎️', '✨'];
             const emojiEl = document.createElement('div');
             emojiEl.className = 'emoji-click';
             emojiEl.innerHTML = emojis[Math.floor(Math.random() * emojis.length)];
@@ -113,28 +108,48 @@
             
             document.body.appendChild(emojiEl);
 
-            // Odstránenie emoji po animácii
-            setTimeout(() => {
-                emojiEl.remove();
-            }, 2000);
+            setTimeout(() => { emojiEl.remove(); }, 2500);
         });
 
-        // Automatický ohňostroj na začiatku
+        // 2. DLHŠÍ A NÁHODNÝ NARODENINOVÝ ŠTART
         window.onload = function() {
-            const count = 200;
-            const defaults = { origin: { y: 0.7 } };
+            var duration = 5 * 1000; // 5 sekúnd šialenstva
+            var animationEnd = Date.now() + duration;
+            var defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
 
-            function fire(particleRatio, opts) {
-                confetti(Object.assign({}, defaults, opts, {
-                    particleCount: Math.floor(count * particleRatio)
-                }));
+            function randomInRange(min, max) {
+                return Math.random() * (max - min) + min;
             }
 
-            fire(0.25, { spread: 26, startVelocity: 55 });
-            fire(0.2, { spread: 60 });
-            fire(0.35, { spread: 100, decay: 0.91, scalar: 0.8 });
-            fire(0.1, { spread: 120, startVelocity: 25, decay: 0.92, scalar: 1.2 });
-            fire(0.1, { spread: 120, startVelocity: 45 });
+            var interval = setInterval(function() {
+                var timeLeft = animationEnd - Date.now();
+
+                if (timeLeft <= 0) {
+                    return clearInterval(interval);
+                }
+
+                var particleCount = 50 * (timeLeft / duration);
+                
+                // Strieľame z náhodných miest na stranách
+                confetti(Object.assign({}, defaults, { 
+                    particleCount, 
+                    origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } 
+                }));
+                confetti(Object.assign({}, defaults, { 
+                    particleCount, 
+                    origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } 
+                }));
+                
+                // Občasný výstrel zdola v strede
+                if (Math.random() > 0.7) {
+                    confetti({
+                        particleCount: 20,
+                        spread: 60,
+                        origin: { x: 0.5, y: 0.8 },
+                        colors: ['#ff4d6d']
+                    });
+                }
+            }, 250);
         };
     </script>
 </body>
