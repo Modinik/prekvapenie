@@ -11,7 +11,7 @@
             padding: 0;
             display: flex;
             justify-content: center;
-            align-items: center; /* Návrat na stred */
+            align-items: center;
             height: 100vh;
             background: radial-gradient(circle at center, #1a1a3a 0%, #0b0b14 100%);
             font-family: 'Segoe UI', Arial, sans-serif;
@@ -28,15 +28,14 @@
             box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
             backdrop-filter: blur(15px);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            animation: fadeIn 1.5s ease-out;
+            animation: fadeIn 1.2s ease-out;
             max-width: 850px;
             width: 85%;
-            z-index: 1; /* Pod konfetami */
+            z-index: 1; 
             position: relative;
             user-select: none;
         }
 
-        /* Konfety a emoji musia byť NAD kontajnerom */
         canvas {
             position: fixed !important;
             top: 0;
@@ -70,7 +69,7 @@
             pointer-events: none;
             font-size: 2.8rem;
             animation: fall 3s forwards ease-in;
-            z-index: 101; /* Emoji nad všetkým */
+            z-index: 101;
         }
 
         @keyframes fall {
@@ -90,7 +89,7 @@
     <script>
         const myConfetti = confetti.create(undefined, { resize: true, useWorker: true });
 
-        // Klikacia interakcia
+        // Klikacia interakcia (ostáva rovnaká, je super)
         document.addEventListener('click', function(e) {
             myConfetti({
                 particleCount: 50,
@@ -99,7 +98,7 @@
                 zIndex: 200
             });
 
-            const emojis = ['🎉', '🎂', '🎈', '🎊', '🏎️', '🍾'];
+            const emojis = ['🎉', '🎂', '🎈', '🎊', '🏎️'];
             const emojiEl = document.createElement('div');
             emojiEl.className = 'emoji-click';
             emojiEl.innerHTML = emojis[Math.floor(Math.random() * emojis.length)];
@@ -109,38 +108,32 @@
             setTimeout(() => { emojiEl.remove(); }, 3000);
         });
 
-        // ÚPLNE RANDOM ŠTART KONFIET
+        // INTENZÍVNY ŠTART
         window.onload = function() {
-            var duration = 7 * 1000; // 7 sekúnd random výbuchov
+            // 1. MASÍVNY ÚVODNÝ VÝBUCH (3 naraz)
+            myConfetti({ particleCount: 150, spread: 70, origin: { x: 0.1, y: 0.5 }, zIndex: 200 });
+            myConfetti({ particleCount: 150, spread: 70, origin: { x: 0.9, y: 0.5 }, zIndex: 200 });
+            myConfetti({ particleCount: 200, spread: 100, origin: { x: 0.5, y: 0.3 }, zIndex: 200 });
+
+            // 2. KRÁTKY ALE HUSTÝ DÁŽĎ (3 sekundy)
+            var duration = 3 * 1000; 
             var end = Date.now() + duration;
 
             var interval = setInterval(function() {
                 if (Date.now() > end) return clearInterval(interval);
 
-                // Strieľa z náhodných súradníc (X aj Y sú random)
                 myConfetti({
-                    particleCount: 15,
-                    startVelocity: 30,
+                    particleCount: 25, // Viac častíc naraz
+                    startVelocity: 40,
                     spread: 360,
-                    ticks: 60,
                     origin: { 
                         x: Math.random(), 
-                        y: Math.random() - 0.2 // Trochu vyššie, aby to padalo dole
+                        y: Math.random() - 0.2 
                     },
                     zIndex: 200,
-                    colors: ['#ff4d6d', '#4cc9f0', '#ffbe0b', '#ffffff', '#7209b7']
+                    colors: ['#ff4d6d', '#4cc9f0', '#ffbe0b', '#ffffff']
                 });
-            }, 200);
-
-            // Jeden veľký finálny výbuch zo stredu po 1 sekunde
-            setTimeout(() => {
-                myConfetti({
-                    particleCount: 150,
-                    spread: 100,
-                    origin: { y: 0.5 },
-                    zIndex: 200
-                });
-            }, 1000);
+            }, 100); // Rýchlejšie opakovanie (každých 0.1s)
         };
     </script>
 </body>
