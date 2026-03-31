@@ -13,94 +13,73 @@
             justify-content: center;
             align-items: center;
             height: 100vh;
-            background: radial-gradient(circle at center, #1a1a3a 0%, #0f0f1a 100%);
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: radial-gradient(circle at center, #1a1a3a 0%, #0b0b14 100%);
+            font-family: 'Segoe UI', Arial, sans-serif;
             color: white;
             overflow: hidden;
             text-align: center;
-            position: relative;
-            cursor: pointer; /* Naznačíme, že sa dá klikať */
-        }
-
-        /* Dekoratívne vlnovky a čiary na pozadí */
-        .bg-decoration {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            top: 0;
-            left: 0;
-            z-index: -1;
-            opacity: 0.3;
-            pointer-events: none;
-        }
-
-        .line {
-            position: absolute;
-            border: 2px solid #e94560;
-            border-radius: 50%;
-            animation: move 15s infinite alternate ease-in-out;
-        }
-
-        @keyframes move {
-            from { transform: translate(0, 0) rotate(0deg); }
-            to { transform: translate(100px, 50px) rotate(20deg); }
+            cursor: pointer;
+            user-select: none;
         }
 
         .container {
-            padding: 50px 80px;
-            border-radius: 30px;
-            background: rgba(255, 255, 255, 0.05);
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5), 
-                        inset 0 0 15px rgba(233, 69, 96, 0.2);
-            backdrop-filter: blur(10px);
+            padding: 60px 100px;
+            border-radius: 40px;
+            background: rgba(255, 255, 255, 0.03);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(15px);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            animation: fadeIn 1.5s ease-out;
-            max-width: 800px;
+            animation: fadeIn 1.2s ease-out;
+            max-width: 900px;
             width: 85%;
-            user-select: none; /* Aby sa text pri klikaní neoznačoval */
+            z-index: 10;
         }
 
         h1 {
-            font-size: 3.8rem;
-            margin-bottom: 20px;
-            color: #e94560;
-            text-shadow: 2px 2px 10px rgba(233, 69, 96, 0.5);
+            font-size: 4rem;
+            margin-bottom: 25px;
+            color: #ff4d6d;
+            text-shadow: 0 0 20px rgba(255, 77, 109, 0.3);
         }
 
         p {
-            font-size: 1.8rem;
-            line-height: 1.6;
+            font-size: 2rem;
+            line-height: 1.5;
             font-weight: 300;
+            color: #e0e0e0;
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; scale: 0.9; }
-            to { opacity: 1; scale: 1; }
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
         }
 
-        /* Tip pre otca */
-        .click-hint {
+        /* Štýl pre padajúce emoji pri kliknutí */
+        .emoji-click {
             position: absolute;
-            bottom: 20px;
-            font-size: 0.9rem;
-            opacity: 0.6;
-            animation: pulse 2s infinite;
+            pointer-events: none;
+            font-size: 2rem;
+            animation: fall 2s forwards ease-in;
+            z-index: 100;
         }
 
-        @keyframes pulse {
-            0% { opacity: 0.3; }
-            50% { opacity: 0.8; }
-            100% { opacity: 0.3; }
+        @keyframes fall {
+            0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(500px) rotate(360deg); opacity: 0; }
+        }
+
+        .hint {
+            position: absolute;
+            bottom: 30px;
+            font-size: 1rem;
+            color: #ff4d6d;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            opacity: 0.5;
         }
     </style>
 </head>
 <body>
-
-    <div class="bg-decoration">
-        <div class="line" style="width: 400px; height: 150px; top: 5%; left: -100px; border-radius: 30% 70% 70% 30%;"></div>
-        <div class="line" style="width: 300px; height: 200px; bottom: 10%; right: -50px; border-color: #4ecca3; opacity: 0.4;"></div>
-        <div class="line" style="width: 150px; height: 150px; top: 50%; left: 5%; border-width: 1px; border-style: dashed; opacity: 0.2;"></div>
-    </div>
 
     <div class="container">
         <h1>Všetko najlepšie, tatik! 🎂</h1>
@@ -108,56 +87,54 @@
         Si ten najlepší tatik na svete!</p>
     </div>
 
-    <div class="click-hint">Skús klikať myškou po obrazovke! ✨</div>
+    <div class="hint">Klikaj kdekoľvek pre prekvapenie ✨</div>
 
     <script>
-        // Funkcia pre výbuch na mieste kliknutia
+        // Funkcia pre efekty pri kliknutí
         document.addEventListener('click', function(e) {
-            var scalar = 2;
-            var party = confetti.shapeFromText({ text: '🎉', scalar });
-
+            // 1. Klasické konfety z miesta kliku
             confetti({
-                shapes: [party, 'circle', 'square'],
-                particleCount: 40,
-                spread: 70,
+                particleCount: 30,
+                spread: 60,
                 origin: {
                     x: e.clientX / window.innerWidth,
                     y: e.clientY / window.innerHeight
                 },
-                colors: ['#e94560', '#4ecca3', '#ffffff', '#ffbe0b']
+                colors: ['#ff4d6d', '#ffffff', '#ffbe0b']
             });
+
+            // 2. Ručne vytvorené padajúce emoji
+            const emojis = ['🎉', '🎂', '🎈', '🎊'];
+            const emojiEl = document.createElement('div');
+            emojiEl.className = 'emoji-click';
+            emojiEl.innerHTML = emojis[Math.floor(Math.random() * emojis.length)];
+            emojiEl.style.left = e.clientX + 'px';
+            emojiEl.style.top = e.clientY + 'px';
+            
+            document.body.appendChild(emojiEl);
+
+            // Odstránenie emoji po animácii
+            setTimeout(() => {
+                emojiEl.remove();
+            }, 2000);
         });
 
-        // Automatický štart po načítaní
+        // Automatický ohňostroj na začiatku
         window.onload = function() {
-            confetti({
-                particleCount: 150,
-                spread: 70,
-                origin: { y: 0.6 }
-            });
+            const count = 200;
+            const defaults = { origin: { y: 0.7 } };
 
-            var duration = 4 * 1000;
-            var animationEnd = Date.now() + duration;
+            function fire(particleRatio, opts) {
+                confetti(Object.assign({}, defaults, opts, {
+                    particleCount: Math.floor(count * particleRatio)
+                }));
+            }
 
-            var interval = setInterval(function() {
-                var timeLeft = animationEnd - Date.now();
-                if (timeLeft <= 0) return clearInterval(interval);
-
-                confetti({
-                    particleCount: 20,
-                    angle: 60,
-                    spread: 55,
-                    origin: { x: 0 },
-                    colors: ['#e94560', '#ffffff']
-                });
-                confetti({
-                    particleCount: 20,
-                    angle: 120,
-                    spread: 55,
-                    origin: { x: 1 },
-                    colors: ['#4ecca3', '#ffffff']
-                });
-            }, 400);
+            fire(0.25, { spread: 26, startVelocity: 55 });
+            fire(0.2, { spread: 60 });
+            fire(0.35, { spread: 100, decay: 0.91, scalar: 0.8 });
+            fire(0.1, { spread: 120, startVelocity: 25, decay: 0.92, scalar: 1.2 });
+            fire(0.1, { spread: 120, startVelocity: 45 });
         };
     </script>
 </body>
