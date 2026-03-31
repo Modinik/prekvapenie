@@ -11,7 +11,7 @@
             padding: 0;
             display: flex;
             justify-content: center;
-            align-items: flex-end; /* Posunie tabuľku na spodok */
+            align-items: center; /* Návrat na stred */
             height: 100vh;
             background: radial-gradient(circle at center, #1a1a3a 0%, #0b0b14 100%);
             font-family: 'Segoe UI', Arial, sans-serif;
@@ -19,62 +19,63 @@
             overflow: hidden;
             text-align: center;
             cursor: pointer;
-            padding-bottom: 50px; /* Medzera od úplného spodku */
         }
 
         .container {
-            padding: 40px 60px;
-            border-radius: 30px;
+            padding: 50px 70px;
+            border-radius: 40px;
             background: rgba(255, 255, 255, 0.05);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(10px);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(15px);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            animation: fadeInUp 1.2s ease-out;
-            max-width: 800px;
+            animation: fadeIn 1.5s ease-out;
+            max-width: 850px;
             width: 85%;
-            z-index: 1; /* Tabuľka bude nižšie */
+            z-index: 1; /* Pod konfetami */
             position: relative;
+            user-select: none;
         }
 
-        /* Toto zabezpečí, že konfety budú NAD všetkým */
+        /* Konfety a emoji musia byť NAD kontajnerom */
         canvas {
             position: fixed !important;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            z-index: 9999 !important; /* Najvyššia vrstva */
-            pointer-events: none; /* Aby sa dalo klikať "cez" konfety */
+            z-index: 100 !important; 
+            pointer-events: none;
         }
 
         h1 {
-            font-size: 3.2rem;
-            margin-bottom: 15px;
+            font-size: 3.5rem;
+            margin-bottom: 20px;
             color: #ff4d6d;
+            text-shadow: 0 0 15px rgba(255, 77, 109, 0.3);
         }
 
         p {
-            font-size: 1.6rem;
-            line-height: 1.4;
-            color: #e0e0e0;
+            font-size: 1.8rem;
+            line-height: 1.5;
+            color: #f0f0f0;
         }
 
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(50px); }
-            to { opacity: 1; transform: translateY(0); }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
         }
 
         .emoji-click {
             position: absolute;
             pointer-events: none;
-            font-size: 2.5rem;
-            animation: fall 2.5s forwards ease-in;
-            z-index: 10000; /* Emoji tiež nad tabuľkou */
+            font-size: 2.8rem;
+            animation: fall 3s forwards ease-in;
+            z-index: 101; /* Emoji nad všetkým */
         }
 
         @keyframes fall {
             0% { transform: translateY(0) rotate(0deg); opacity: 1; }
-            100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+            100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
         }
     </style>
 </head>
@@ -87,64 +88,59 @@
     </div>
 
     <script>
-        // Nastavenie konfiet tak, aby boli vždy navrchu
-        const myConfetti = confetti.create(undefined, {
-            resize: true,
-            useWorker: true
-        });
+        const myConfetti = confetti.create(undefined, { resize: true, useWorker: true });
 
+        // Klikacia interakcia
         document.addEventListener('click', function(e) {
             myConfetti({
-                particleCount: 40,
-                spread: 70,
+                particleCount: 50,
+                spread: 80,
                 origin: { x: e.clientX / window.innerWidth, y: e.clientY / window.innerHeight },
-                zIndex: 9999 // Explicitne navrchu
+                zIndex: 200
             });
 
-            const emojis = ['🎉', '🎂', '🎈', '🎊', '🏎️'];
+            const emojis = ['🎉', '🎂', '🎈', '🎊', '🏎️', '🍾'];
             const emojiEl = document.createElement('div');
             emojiEl.className = 'emoji-click';
             emojiEl.innerHTML = emojis[Math.floor(Math.random() * emojis.length)];
             emojiEl.style.left = e.clientX + 'px';
             emojiEl.style.top = e.clientY + 'px';
             document.body.appendChild(emojiEl);
-            setTimeout(() => { emojiEl.remove(); }, 2500);
+            setTimeout(() => { emojiEl.remove(); }, 3000);
         });
 
+        // ÚPLNE RANDOM ŠTART KONFIET
         window.onload = function() {
-            var duration = 6 * 1000;
+            var duration = 7 * 1000; // 7 sekúnd random výbuchov
             var end = Date.now() + duration;
 
-            (function frame() {
-                myConfetti({
-                    particleCount: 3,
-                    angle: 60,
-                    spread: 55,
-                    origin: { x: 0, y: 0.8 },
-                    zIndex: 9999
-                });
-                myConfetti({
-                    particleCount: 3,
-                    angle: 120,
-                    spread: 55,
-                    origin: { x: 1, y: 0.8 },
-                    zIndex: 9999
-                });
-
-                if (Date.now() < end) {
-                    requestAnimationFrame(frame);
-                }
-            }());
-            
-            // Náhodné výbuchy zhora
             var interval = setInterval(function() {
                 if (Date.now() > end) return clearInterval(interval);
+
+                // Strieľa z náhodných súradníc (X aj Y sú random)
                 myConfetti({
-                    particleCount: 10,
-                    origin: { x: Math.random(), y: Math.random() - 0.2 },
-                    zIndex: 9999
+                    particleCount: 15,
+                    startVelocity: 30,
+                    spread: 360,
+                    ticks: 60,
+                    origin: { 
+                        x: Math.random(), 
+                        y: Math.random() - 0.2 // Trochu vyššie, aby to padalo dole
+                    },
+                    zIndex: 200,
+                    colors: ['#ff4d6d', '#4cc9f0', '#ffbe0b', '#ffffff', '#7209b7']
                 });
-            }, 300);
+            }, 200);
+
+            // Jeden veľký finálny výbuch zo stredu po 1 sekunde
+            setTimeout(() => {
+                myConfetti({
+                    particleCount: 150,
+                    spread: 100,
+                    origin: { y: 0.5 },
+                    zIndex: 200
+                });
+            }, 1000);
         };
     </script>
 </body>
