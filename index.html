@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Všetko najlepšie, tatik!</title>
+    <title>Všetko najlepšie, Rado Van Gajdoš!</title>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
     <style>
         body {
@@ -19,24 +19,69 @@
             overflow: hidden;
             text-align: center;
             cursor: pointer;
-            /* Zabraňuje nechcenému zoomovaniu na mobile pri klikaní */
             touch-action: manipulation;
         }
 
+        /* Kontajner pre fotky okolo banera */
+        .photo-gallery {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            pointer-events: none; /* Aby sa dalo klikať na pozadie cez fotky */
+        }
+
+        .photo {
+            position: absolute;
+            width: 150px; /* Veľkosť fotky na PC */
+            height: 150px;
+            object-fit: cover;
+            border: 5px solid white;
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+            animation: float 4s infinite ease-in-out;
+            z-index: 5;
+            pointer-events: auto; /* Aby sa na fotky dalo klikať pre konfety */
+        }
+
+        /* Pozície fotiek - rozhádzané okolo stredu */
+        .p1 { top: 10%; left: 10%; animation-delay: 0s; transform: rotate(-10deg); }
+        .p2 { top: 15%; right: 10%; animation-delay: 1s; transform: rotate(12deg); }
+        .p3 { bottom: 15%; left: 8%; animation-delay: 2s; transform: rotate(-5deg); }
+        .p4 { bottom: 10%; right: 12%; animation-delay: 1.5s; transform: rotate(8deg); }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(var(--rot)); }
+            50% { transform: translateY(-15px) rotate(var(--rot)); }
+        }
+
+        /* Prispôsobenie pre mobily - fotky zmenšíme alebo skryjeme, aby nezavadzali */
+        @media (max-width: 600px) {
+            .photo {
+                width: 80px;
+                height: 80px;
+                border-width: 3px;
+            }
+            .p1 { top: 5%; left: 5%; }
+            .p2 { top: 5%; right: 5%; }
+            .p3 { bottom: 12%; left: 5%; }
+            .p4 { bottom: 12%; right: 5%; }
+        }
+
         .container {
-            padding: 30px;
-            border-radius: 30px;
+            padding: 35px;
+            border-radius: 40px;
             background: rgba(255, 255, 255, 0.05);
             box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
             backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px); /* Pre Safari na iPhone */
+            -webkit-backdrop-filter: blur(15px);
             border: 1px solid rgba(255, 255, 255, 0.1);
             animation: fadeIn 1.2s ease-out;
-            max-width: 90%; /* Prispôsobenie šírky mobilu */
-            width: 800px;
-            z-index: 1; 
+            max-width: 85%;
+            width: 600px;
+            z-index: 10; 
             position: relative;
-            user-select: none;
         }
 
         canvas {
@@ -49,119 +94,91 @@
             pointer-events: none;
         }
 
-        /* Dynamická veľkosť písma podľa zariadenia */
-        h1 {
-            font-size: clamp(2rem, 8vw, 3.5rem);
-            margin-bottom: 15px;
-            color: #ff4d6d;
-            text-shadow: 0 0 15px rgba(255, 77, 109, 0.3);
-        }
-
-        p {
-            font-size: clamp(1.1rem, 4vw, 1.8rem);
-            line-height: 1.4;
-            color: #f0f0f0;
-        }
+        h1 { font-size: clamp(1.8rem, 7vw, 3rem); color: #ff4d6d; margin-bottom: 15px; }
+        p { font-size: clamp(1rem, 4vw, 1.5rem); color: #f0f0f0; }
 
         .click-hint {
             position: absolute;
-            bottom: 20px;
+            bottom: 25px;
             left: 50%;
             transform: translateX(-50%);
-            font-size: clamp(0.7rem, 3vw, 1rem);
+            font-size: 0.8rem;
             color: #ff4d6d;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            font-weight: bold;
             opacity: 0.6;
-            animation: pulse 2s infinite ease-in-out;
-            width: 100%;
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 0.2; }
-            50% { opacity: 0.8; }
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: scale(0.9); }
-            to { opacity: 1; transform: scale(1); }
+            z-index: 10;
         }
 
         .emoji-click {
             position: absolute;
             pointer-events: none;
-            font-size: clamp(1.5rem, 6vw, 2.8rem);
-            animation: fall 2.5s forwards ease-in;
+            font-size: 2.5rem;
+            animation: fall 2.8s forwards ease-in;
             z-index: 101;
         }
 
         @keyframes fall {
             0% { transform: translateY(0) rotate(0deg); opacity: 1; }
-            100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
+            100% { transform: translateY(110vh) rotate(540deg); opacity: 0; }
         }
     </style>
 </head>
 <body>
 
+    <div class="photo-gallery">
+        <img src="foto1.jpg" alt="Spomienka 1" class="photo p1" style="--rot: -10deg">
+        <img src="foto2.jpg" alt="Spomienka 2" class="photo p2" style="--rot: 12deg">
+        <img src="foto3.jpg" alt="Spomienka 3" class="photo p3" style="--rot: -5deg">
+        <img src="foto4.jpg" alt="Spomienka 4" class="photo p4" style="--rot: 8deg">
+    </div>
+
     <div class="container">
-        <h1>Všetko najlepšie, tatik! 🎂</h1>
+        <h1>Všetko najlepšie,<br>Rado Van Gajdoš! 🎂</h1>
         <p>Prajem Ti veľa zdravia, šťastia, pohody a aby si nechodil rýchlo. <br>
         Si ten najlepší tatik na svete!</p>
     </div>
 
-    <div class="click-hint">Ťukni na displej pre prekvapenie ✨</div>
+    <div class="click-hint">Ťukni pre prekvapenie ✨</div>
 
     <script>
         const myConfetti = confetti.create(undefined, { resize: true, useWorker: true });
 
-        // Funkcia pre efekty (funguje na klik aj dotyk)
         function triggerEffect(x, y) {
             myConfetti({
-                particleCount: window.innerWidth < 600 ? 25 : 50, // Na mobile menej častíc, aby nesekalo
-                spread: 70,
+                particleCount: 40,
+                spread: 80,
                 origin: { x: x / window.innerWidth, y: y / window.innerHeight },
                 zIndex: 200
             });
 
-            const emojis = ['🎉', '🎂', '🎈', '🎊', '🎁', '🥂', '🍾', '🍺'];
+            const emojis = ['🎉', '🎂', '🎈', '🏎️', '✨'];
             const emojiEl = document.createElement('div');
             emojiEl.className = 'emoji-click';
             emojiEl.innerHTML = emojis[Math.floor(Math.random() * emojis.length)];
             emojiEl.style.left = x + 'px';
             emojiEl.style.top = y + 'px';
             document.body.appendChild(emojiEl);
-            setTimeout(() => { emojiEl.remove(); }, 2500);
+            setTimeout(() => { emojiEl.remove(); }, 2800);
         }
 
         document.addEventListener('mousedown', (e) => triggerEffect(e.clientX, e.clientY));
-        // Pridaná podpora pre dotykové displeje
-        document.addEventListener('touchstart', (e) => {
-            triggerEffect(e.touches[0].clientX, e.touches[0].clientY);
-        });
+        document.addEventListener('touchstart', (e) => triggerEffect(e.touches[0].clientX, e.touches[0].clientY));
 
         window.onload = function() {
             const isMobile = window.innerWidth < 600;
+            myConfetti({ particleCount: isMobile ? 100 : 200, spread: 90, origin: { y: 0.4 }, zIndex: 200 });
             
-            // Úvodné výbuchy prispôsobené obrazovke
-            myConfetti({ particleCount: isMobile ? 80 : 150, spread: 70, origin: { x: 0.1, y: 0.5 }, zIndex: 200 });
-            myConfetti({ particleCount: isMobile ? 80 : 150, spread: 70, origin: { x: 0.9, y: 0.5 }, zIndex: 200 });
-
             var duration = 3 * 1000; 
             var end = Date.now() + duration;
-
             var interval = setInterval(function() {
                 if (Date.now() > end) return clearInterval(interval);
-
                 myConfetti({
-                    particleCount: isMobile ? 10 : 25, 
-                    startVelocity: isMobile ? 25 : 40,
-                    spread: 360,
+                    particleCount: 15,
                     origin: { x: Math.random(), y: Math.random() - 0.2 },
                     zIndex: 200
                 });
-            }, isMobile ? 200 : 100);
+            }, 150);
         };
     </script>
 </body>
 </html>
+
