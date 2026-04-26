@@ -11,82 +11,91 @@
             padding: 0;
             background: #0b0b14;
             background: radial-gradient(circle at top, #1a1a3a 0%, #0b0b14 100%);
-            font-family: 'Segoe UI', Arial, sans-serif;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             color: white;
             min-height: 100vh;
-            overflow-x: hidden; /* Zákaz bočného posúvania */
+            overflow-x: hidden;
             cursor: pointer;
         }
 
-        /* Banner na vrchu */
+        /* Moderný čistý banner */
         .header-banner {
             width: 100%;
-            padding: 60px 20px;
-            background: rgba(255, 255, 255, 0.03);
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 80px 20px;
             text-align: center;
             box-sizing: border-box;
+            position: relative;
+            z-index: 10;
         }
 
         h1 {
-            font-size: clamp(2rem, 8vw, 3.5rem);
+            font-size: clamp(2.2rem, 10vw, 4rem);
             color: #ff4d6d;
-            margin: 0 0 15px 0;
-            text-shadow: 0 0 15px rgba(255, 77, 109, 0.4);
+            margin: 0 0 20px 0;
+            font-weight: 800;
+            letter-spacing: -1px;
+            text-shadow: 0 10px 30px rgba(255, 77, 109, 0.3);
         }
 
         p {
-            font-size: clamp(1.1rem, 4vw, 1.6rem);
-            max-width: 800px;
+            font-size: clamp(1.1rem, 5vw, 1.8rem);
+            max-width: 700px;
             margin: 0 auto;
-            color: #f0f0f0;
-            line-height: 1.4;
+            color: rgba(255, 255, 255, 0.9);
+            line-height: 1.6;
+            font-weight: 300;
         }
 
-        /* Sekcia galérie */
-        .gallery-container {
-            max-width: 1100px;
-            margin: 40px auto;
-            padding: 20px;
+        /* Nové usporiadanie galérie */
+        .gallery-wrap {
+            max-width: 1200px;
+            margin: 0 auto 100px auto;
+            padding: 0 20px;
+        }
+
+        .gallery-grid {
             display: grid;
-            /* Automatické stĺpce podľa šírky displeja */
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 25px;
-            justify-items: center;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            grid-auto-rows: 350px; /* Jednotná výška pre čistý vzhľad */
+            gap: 30px;
         }
 
-        .photo-card {
-            background: rgba(255, 255, 255, 0.05);
-            padding: 10px;
-            border-radius: 20px;
+        .photo-item {
+            position: relative;
+            overflow: hidden;
+            border-radius: 24px;
+            transition: all 0.5s cubic-bezier(0.2, 1, 0.3, 1);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
 
-        .photo-card:hover {
-            transform: translateY(-10px) rotate(2deg);
-            box-shadow: 0 15px 30px rgba(255, 77, 109, 0.2);
-        }
-
-        .photo-card img {
+        .photo-item img {
             width: 100%;
-            height: 250px;
+            height: 100%;
             object-fit: cover;
-            border-radius: 15px;
-            display: block;
+            transition: transform 0.6s scale;
         }
 
-        .hint-bar {
+        /* Efekt pri prejdení myšou */
+        .photo-item:hover {
+            transform: scale(1.03) translateY(-5px);
+            box-shadow: 0 20px 50px rgba(255, 77, 109, 0.2);
+            border-color: rgba(255, 77, 109, 0.5);
+        }
+
+        .photo-item:hover img {
+            transform: scale(1.1);
+        }
+
+        .hint-text {
             text-align: center;
-            padding: 20px;
+            padding: 40px;
             font-size: 0.9rem;
             color: #ff4d6d;
-            letter-spacing: 2px;
             text-transform: uppercase;
-            opacity: 0.6;
-            animation: pulse 2s infinite ease-in-out;
+            letter-spacing: 3px;
+            opacity: 0.5;
+            animation: pulse 2s infinite;
         }
 
         @keyframes pulse {
@@ -96,20 +105,16 @@
 
         canvas {
             position: fixed !important;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            top: 0; left: 0; width: 100%; height: 100%;
             z-index: 9999 !important;
             pointer-events: none;
         }
 
-        /* Padajúce emoji pri kliknutí */
         .emoji-click {
             position: absolute;
             pointer-events: none;
-            font-size: 2.5rem;
-            animation: fall 2.5s forwards ease-in;
+            font-size: 3rem;
+            animation: fall 3s forwards ease-in;
             z-index: 10000;
         }
 
@@ -117,23 +122,35 @@
             0% { transform: translateY(0) rotate(0deg); opacity: 1; }
             100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
         }
+
+        /* Responzivita pre mobil */
+        @media (max-width: 600px) {
+            .gallery-grid {
+                grid-template-columns: 1fr; /* Na mobile jedna pod druhou */
+                grid-auto-rows: 300px;
+                gap: 20px;
+            }
+            .header-banner { padding: 50px 15px; }
+        }
     </style>
 </head>
 <body>
 
     <header class="header-banner">
-        <h1>Všetko najlepšie, Rado Van Gajdoš! 🎂</h1>
-        <p>Prajem Ti veľa zdravia, šťastia, pohody a aby sa ti darilo s Nelou, a taktiež aj na DHZ.</p>
+        <h1>Všetko najlepšie,<br>Rado Van Gajdoš! 🎂</h1>
+        <p>Prajem Ti veľa zdravia, šťastia, pohody a aby sa ti darilo s Nelou, a taktiež aj na DHZ</p>
     </header>
 
-    <div class="hint-bar">Klikaj na obrazovku pre efekty ✨</div>
+    <div class="hint-text">Skús klikať pre prekvapenie ✨</div>
 
-    <div class="gallery-container">
-        <div class="photo-card"><img src="foto1.jpg" alt="Spomienka 1"></div>
-        <div class="photo-card"><img src="foto2.jpg" alt="Spomienka 2"></div>
-        <div class="photo-card"><img src="foto3.jpeg" alt="Spomienka 3"></div>
-        <div class="photo-card"><img src="foto4.jpg" alt="Spomienka 4"></div>
+    <div class="gallery-wrap">
+        <div class="gallery-grid">
+            <div class="photo-item"><img src="foto1.jpg" alt="Foto 1"></div>
+            <div class="photo-item"><img src="foto2.jpg" alt="Foto 2"></div>
+            <div class="photo-item"><img src="foto3.jpeg" alt="Foto 3"></div>
+            <div class="photo-item"><img src="foto4.jpg" alt="Foto 4"></div>
         </div>
+    </div>
 
     <script>
         const myConfetti = confetti.create(undefined, { resize: true, useWorker: true });
@@ -150,11 +167,10 @@
             const emojiEl = document.createElement('div');
             emojiEl.className = 'emoji-click';
             emojiEl.innerHTML = emojis[Math.floor(Math.random() * emojis.length)];
-            // Použijeme pageY, aby emoji padalo z miesta, kde si práve odscrollovaný
             emojiEl.style.left = x + 'px';
             emojiEl.style.top = pageY + 'px';
             document.body.appendChild(emojiEl);
-            setTimeout(() => { emojiEl.remove(); }, 2500);
+            setTimeout(() => { emojiEl.remove(); }, 3000);
         }
 
         document.addEventListener('mousedown', (e) => triggerEffect(e.clientX, e.clientY, e.pageY));
@@ -163,12 +179,9 @@
         });
 
         window.onload = function() {
-            // Úvodný ohňostroj na banneri
             myConfetti({ particleCount: 150, spread: 70, origin: { y: 0.3 }, zIndex: 9999 });
-            
-            var duration = 3 * 1000;
+            var duration = 3000;
             var end = Date.now() + duration;
-
             var interval = setInterval(function() {
                 if (Date.now() > end) return clearInterval(interval);
                 myConfetti({
